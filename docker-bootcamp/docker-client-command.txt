@@ -1,0 +1,124 @@
+docker ps 
+//แสดงข้อมูล Container ทั้งหมดที่ยังไม่ปิด
+
+docker ps --all
+//แสดงข้อมูลทั้งหมดใน Container รวมไปถึงที่ปิดแล้ว
+
+docker ps --all --filter "status=exited"
+//แสดงข้อมูลที่ฟิลเตอร์อันอื่นออกให้เหลือเฉพาะ Container ที่ปิดไปแล้ว
+
+docker run [container] [คำสั่งที่จะเปลี่ยน]
+//เขียนทับ (overidding) Startup Command ของ Container
+
+docker stop [containerid]
+//สั่งปิด container
+
+วงจรชีวิต
+1. docker run => pull , create , Start
+2. docker pull => docker create => docker start [Container ID] => docker rm [Container ID]
+
+docker system prune 
+// ลบ Container ทั้งหมด
+
+docker exec [Container ID] [Command]
+//ส่งคำสั่งเข้าไปทำใน Container เช่น docker exec 453453454 ls <<- เรียกดูไฟล์ใน Container
+
+docker exec -it [Container ID] [sh or bash]
+//ส่งคำสั่งเพื่อเข้าไปใช้ commandline ใน Container
+
+docker run -p [portที่ต้องการ]:[port Container] [ชื่อ image]
+//map port เครื่องกับ port container ให้ตรงกัน เพื่อจะได้สื่อสารเข้าไปใน container ได้
+
+docker run -d -p [portที่ต้องการ]:[port Container] [ชื่อ image]
+//map port เครื่องกับ port container เบื้องหลังให้ตรงกัน เพื่อจะได้สื่อสารเข้าไปใน container ได้
+
+docker run --name [เปลี่ยนชื่อ Container] -p 7000:80 [ชื่อ image]
+//เปลี่ยนชื่อ Container 
+
+docker logs [containerid]
+//ดู log ของ container
+
+docker logs -f [ containerid ]
+//ดู log แบบค้างบน commandline เวลามี log อะไรเกิดขึ้นมันก็จะทำงานอัตโนมัติ
+
+docker system info 
+//ดู info ของ docker
+
+docker system df
+//ดูรายละเอียดว่า docker ใช้ทรัยพากรอะไรไปบ้าง
+
+docker system events 
+//ดูสถานะ docker server
+
+docker image ls , docker image 
+//ดูว่ามี image อะไรในระบบบ้าง
+
+docker image rm [ชื่อ image]
+//ลบ image ทิ้ง 
+
+docker image prune --all
+//ลบ image ที่ไม่ได้ใช้ทิ้งทั้งหมด
+
+docker pull [image]:version
+//pull image ระบุ version
+
+docker network create [ชื่อ network]
+//สร้าง network โดยได้มาเป็น networkid
+
+docker network ls
+//ดู network ที่อยู่ในเครื่อง
+
+docker run --name [ชื่อ] -e [ตัวแปร environment ที่ต้องการ] -d [images]
+//รัน container โดยกำหนดชื่อและใส่ env ให้มัน และให้มันทำ baclground และต่อท้ายด้วย image ที่ต้องการ
+
+"ex"
+docker run --name pmg -p 8888:80 -e PMA_ARBITRARY=1 phpmyadmin/phpmyadmin
+//รัน container โดยกำหนดชื่อว่า pmg โดย mappingport 8888 ให้เข้ากับ port 80 ที่อยุ่ใน container และก็กำหนด env ให้มันและระบุ image ที่ต้องการ
+
+docker network inspect [ชื่อ network]
+//ดูรายละเอียด network
+
+ - การ connect ทั้ง 2 container เข้าหากัน - 
+docker network connect wordpress mysql 
+//connect mysql เข้ากับ network ชื่อ wordpress
+
+docker network connect wordpress pma 
+//connect pma เข้ากับ network ชื่อ wordpress
+
+docker start [ชื่อ container]
+//start container
+
+-ex-
+docker run --name wordpress -p 888:80 --network wordpress -e WORDPRESS_DB_HOST=mysql -e WORDPRESS_DB_USER=root -e WORDPRESS_DB_PASSWORD=1111 -d wordpress
+//รันตัว wordpress และ mapping port 888 กับ port 80 และก็ให้มัน connect กับ network ที่เราสร้างชื่อว่า wordpress
+//และใส่ env ให้กับ wordpress ต่อกันไป และ -d คือ รันแบคกราว และต่อท้ายด้วยชื่อ image ที่ต้องการ
+
+
+-เสริม จัดการลงโปรแกรมบนตัว container-
+apk update 
+อารมณ์เหมือน sudo apt-get update
+apk add [ชื่อโปรแกรม]
+ต้องการลง nano ก็ apk add nano
+
+
+-------------------------
+volume เป็นการจองพื้นที่ใน dockerhost และให้ container มาผูก
+//List volume
+docker volume ls
+
+//create a volume
+docker volume create <idvolume>
+
+//remove one or more remove
+docker volume rm <namevolume>
+
+------------------------
+dockerfile => ไฟล์เอกสารไฟล์หนึ่งที่ผู้ใช้บันทึกไว้
+1.dockerfile 
+  1.1 กำหนด base image
+  1.2 รันคำสั่งติดตั้ง programs หรือ copy ไฟล์เข้าไปใน custom image
+  1.3 กำหนด Startup Command ให้กับตัว Image 
+------------------------
+การที่จะทำให้ dockerfile ทำงานต้องทำงานผ่านคำสั่ง 
+dockerclient เรียกไปหา dockerfile และส่งไปหา docker server
+ซึ่ง docker server จะสร้าง dockerimage ขึ้นมา
