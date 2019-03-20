@@ -22,11 +22,15 @@ CMD ["npm","start"]
 
 
 #ตั้งชื่อ Tag
-#                  Repository:NameTag
-#docker build . -t mynodeapp:1.0 
+#                  Repository:NameTag3
 #ถ้าไม่ใส่ nametag จะเป็น lastest default
 
 
 #วิธีรัน
 #docker run -p 3004:2222 mynodeapp:1.0
 #docker run -p 3002:2222 mynodeapp
+
+
+#create network สำหรับเชื่อมต่อกับ mongodb
+#docker network create shoppers
+#docker network connect shoppers mymongodb
